@@ -1,1 +1,3 @@
 # slackPM
+
+SlackPM v0.1 is the first release of the Slack App that integrates Redmine and JIRA, and gives the Slack user a set of commands allowing the basic Project Management web tools features be triggered from Slack. e.g.: view issue detail, view issue comments, log your time, change Issue status, etc. Regarding technical details, the system was entirely rewritten in Python3.5/Flask0.11/SQLAlchemy1.1 relying in a custom OOP solution based primary on Factory and Adapter patterns. This makes it really easy to scale, by adding new Project Manager tools in the future. Moreover, almost the entire source code is being covered by tests developed with PyUnit unittest framework.
