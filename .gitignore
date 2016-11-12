@@ -87,3 +87,7 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+slackpm/slackpm.db
+slackpm/slackpm.log
+slackpm/settings.py
