@@ -1,5 +1,6 @@
 import os
 import slackpm
+from slackpm.settings import *
 import unittest
 from flask_sqlalchemy import SQLAlchemy
 
@@ -45,7 +46,7 @@ class SlackPMTestCase(unittest.TestCase):
         os.unlink('slackpm/testing.slackpm.db')
 
 
-    def _test_jira_help(self):
+    def test_jira_help(self):
         self.post_data.update(command = '/jira', text = 'help')
         rv = self.app.post('/', data=self.post_data, follow_redirects=True)
         assert b'"text":' in rv.data
@@ -57,15 +58,15 @@ class SlackPMTestCase(unittest.TestCase):
         assert b'"text":' in rv.data
 
     def jira_connect(self):
-        self.post_data.update(command = '/jira', text = 'connect https://fetuxx.atlassian.net/ fetuavalith.net fetux477')
+        self.post_data.update(command = '/jira', text = TESTING_JIRA_CONN)
         return self.app.post('/', data=self.post_data, follow_redirects=True)
 
     def redmine_connect(self):
-        self.post_data.update(command = '/redmine', text = 'connect http://redmine.smarterlith.net/ 11a4ecdc2cbd816e66d342cd86ba79bce2fd5860')
+        self.post_data.update(command = '/redmine', text = TESTING_REDMINE_CONN)
         return self.app.post('/', data=self.post_data, follow_redirects=True)
 
 
-    def _test_jira_connect(self):
+    def test_jira_connect(self):
         rv = self.jira_connect()
         assert b'"text":' in rv.data
 
@@ -75,7 +76,7 @@ class SlackPMTestCase(unittest.TestCase):
         assert b'"text":' in rv.data
 
 
-    def _test_jira_issue_show(self):
+    def test_jira_issue_show(self):
         self.jira_connect()
         self.post_data.update(command = '/jira', text = 'issue FET-11')
         rv = self.app.post('/', data=self.post_data, follow_redirects=True)
@@ -84,9 +85,9 @@ class SlackPMTestCase(unittest.TestCase):
 
     def test_redmine_issue(self):
         self.redmine_connect()
-        self.post_data.update(command = '/redmine', text = 'issue 3')
+        self.post_data.update(command = '/redmine', text = 'issue 265')
         rv = self.app.post('/', data=self.post_data, follow_redirects=True)
-        assert b'"text": "_/redmine issue 3_\\n<http://redmine.smarterlith.net/issues/3|' in rv.data
+        assert b'"text": "_/redmine issue 265_\\n<http://redmine.avalith.net/issues/265|' in rv.data
 
     def test_redmine_issue_not_found(self):
         self.redmine_connect()
@@ -94,7 +95,7 @@ class SlackPMTestCase(unittest.TestCase):
         rv = self.app.post('/', data=self.post_data, follow_redirects=True)
         assert b'"text": "Ups! Issue not found dude :/"' in rv.data
 
-    def _test_jira_issue_status(self):
+    def test_jira_issue_status(self):
         self.jira_connect()
         self.post_data.update(command = '/jira', text = 'issue FET-11 status')
         rv = self.app.post('/', data=self.post_data, follow_redirects=True)
@@ -103,12 +104,12 @@ class SlackPMTestCase(unittest.TestCase):
 
     def test_redmine_issue_status(self):
         self.redmine_connect()
-        self.post_data.update(command = '/redmine', text = 'issue 3 status')
+        self.post_data.update(command = '/redmine', text = 'issue 265 status')
         rv = self.app.post('/', data=self.post_data, follow_redirects=True)
-        assert b'"text": "_/redmine issue 3 status_"' in rv.data
+        assert b'"text": "_/redmine issue 265 status_"' in rv.data
 
 
-    def _test_jira_issue_set_status(self):
+    def test_jira_issue_set_status(self):
         self.jira_connect()
         self.post_data.update(command = '/jira', text = 'issue FET-11 status done')
         rv = self.app.post('/', data=self.post_data, follow_redirects=True)
@@ -117,31 +118,31 @@ class SlackPMTestCase(unittest.TestCase):
 
     def test_redmine_issue_set_status(self):
         self.redmine_connect()
-        self.post_data.update(command = '/redmine', text = 'issue 3 status resolved')
+        self.post_data.update(command = '/redmine', text = 'issue 265 status resolved')
         rv = self.app.post('/', data=self.post_data, follow_redirects=True)
-        assert b'"text": "_/redmine issue 3 status resolved_"' in rv.data
+        assert b'"text": "_/redmine issue 265 status resolved_"' in rv.data
 
     def test_redmine_issue_set_status_invalid(self):
         self.redmine_connect()
-        self.post_data.update(command = '/redmine', text = 'issue 3 status paused')
+        self.post_data.update(command = '/redmine', text = 'issue 265 status paused')
         rv = self.app.post('/', data=self.post_data, follow_redirects=True)
         assert b'"text": "paused is not a valid Redmine Isssue Status"' in rv.data
 
-    def _test_jira_issue_priority(self):
+    def test_jira_issue_priority(self):
         self.jira_connect()
         self.post_data.update(command = '/jira', text = 'issue FET-11 priority')
         rv = self.app.post('/', data=self.post_data, follow_redirects=True)
-        assert b'"text": "_/jira issue 3 priority_"' in rv.data
+        assert b'"text": "_/jira issue FET-11 priority_"' in rv.data
 
 
     def test_redmine_issue_priority(self):
         self.redmine_connect()
-        self.post_data.update(command = '/redmine', text = 'issue 3 priority')
+        self.post_data.update(command = '/redmine', text = 'issue 265 priority')
         rv = self.app.post('/', data=self.post_data, follow_redirects=True)
-        assert b'"text": "_/redmine issue 3 priority_"' in rv.data
+        assert b'"text": "_/redmine issue 265 priority_"' in rv.data
 
 
-    def _test_jira_issue_assignee(self):
+    def test_jira_issue_assignee(self):
         self.jira_connect()
         self.post_data.update(command = '/jira', text = 'issue FET-11 assignee')
         rv = self.app.post('/', data=self.post_data, follow_redirects=True)
@@ -150,32 +151,32 @@ class SlackPMTestCase(unittest.TestCase):
 
     def test_redmine_issue_assignee(self):
         self.redmine_connect()
-        self.post_data.update(command = '/redmine', text = 'issue 3 assignee')
+        self.post_data.update(command = '/redmine', text = 'issue 265 assignee')
         rv = self.app.post('/', data=self.post_data, follow_redirects=True)
-        assert b'"text": "_/redmine issue 3 assignee_"' in rv.data
+        assert b'"text": "_/redmine issue 265 assignee_"' in rv.data
 
 
-    def _test_jira_issue_subtasks(self):
+    def test_jira_issue_subtasks(self):
         self.jira_connect()
-        self.post_data.update(command = '/jira', text = 'issue FET-11 subtasks')
+        self.post_data.update(command = '/jira', text = 'issue FET-10 subtasks')
         rv = self.app.post('/', data=self.post_data, follow_redirects=True)
         assert b'"text":' in rv.data
 
 
     def test_redmine_issue_subtasks(self):
         self.redmine_connect()
-        self.post_data.update(command = '/redmine', text = 'issue 3 subtasks')
+        self.post_data.update(command = '/redmine', text = 'issue 265 subtasks')
         rv = self.app.post('/', data=self.post_data, follow_redirects=True)
-        assert b'"text": "_/redmine issue 3 subtasks_\\n<http://redmine.smarterlith.net/issues/3|' in rv.data
+        assert b'"text": "_/redmine issue 265 subtasks_\\n<http://redmine.avalith.net/issues/265|' in rv.data
 
     def test_redmine_issue_subtasks_none(self):
         self.redmine_connect()
-        self.post_data.update(command = '/redmine', text = 'issue 5 subtasks')
+        self.post_data.update(command = '/redmine', text = 'issue 266 subtasks')
         rv = self.app.post('/', data=self.post_data, follow_redirects=True)
-        assert b'"text": "_/redmine issue 5 subtasks_\\n<http://redmine.smarterlith.net/issues/5|' in rv.data
+        assert b'"text": "_/redmine issue 266 subtasks_\\n<http://redmine.avalith.net/issues/266|' in rv.data
         assert b'Subtasks: None' in rv.data
 
-    def _test_jira_issue_related(self):
+    def test_jira_issue_related(self):
         self.jira_connect()
         self.post_data.update(command = '/jira', text = 'issue FET-11 related')
         rv = self.app.post('/', data=self.post_data, follow_redirects=True)
@@ -183,18 +184,18 @@ class SlackPMTestCase(unittest.TestCase):
 
     def test_redmine_issue_related(self):
         self.redmine_connect()
-        self.post_data.update(command = '/redmine', text = 'issue 3 related')
+        self.post_data.update(command = '/redmine', text = 'issue 266 related')
         rv = self.app.post('/', data=self.post_data, follow_redirects=True)
-        assert b'"text": "_/redmine issue 3 related_\\n<http://redmine.smarterlith.net/issues/3|' in rv.data
+        assert b'"text": "_/redmine issue 266 related_\\n<http://redmine.avalith.net/issues/266|' in rv.data
 
     def test_redmine_issue_related_none(self):
         self.redmine_connect()
-        self.post_data.update(command = '/redmine', text = 'issue 6 related')
+        self.post_data.update(command = '/redmine', text = 'issue 265 related')
         rv = self.app.post('/', data=self.post_data, follow_redirects=True)
-        assert b'"text": "_/redmine issue 6 related_\\n<http://redmine.smarterlith.net/issues/6|' in rv.data
+        assert b'"text": "_/redmine issue 265 related_\\n<http://redmine.avalith.net/issues/265|' in rv.data
         assert b'Related Issues: None' in rv.data
 
-    def _test_jira_issue_comments(self):
+    def test_jira_issue_comments(self):
         self.jira_connect()
         self.post_data.update(command = '/jira', text = 'issue FET-11 comments')
         rv = self.app.post('/', data=self.post_data, follow_redirects=True)
@@ -203,19 +204,19 @@ class SlackPMTestCase(unittest.TestCase):
 
     def test_redmine_issue_comments(self):
         self.redmine_connect()
-        self.post_data.update(command = '/redmine', text = 'issue 5 comments')
+        self.post_data.update(command = '/redmine', text = 'issue 266 comments')
         rv = self.app.post('/', data=self.post_data, follow_redirects=True)
-        assert b'"text": "_/redmine issue 5 comments_\\n<http://redmine.smarterlith.net/issues/5|' in rv.data
+        assert b'"text": "_/redmine issue 266 comments_\\n<http://redmine.avalith.net/issues/266|' in rv.data
         assert b'Comments:' in rv.data
 
     def test_redmine_issue_comments_none(self):
         self.redmine_connect()
-        self.post_data.update(command = '/redmine', text = 'issue 3 comments')
+        self.post_data.update(command = '/redmine', text = 'issue 267 comments')
         rv = self.app.post('/', data=self.post_data, follow_redirects=True)
-        assert b'"text": "_/redmine issue 3 comments_\\n<http://redmine.smarterlith.net/issues/3|' in rv.data
+        assert b'"text": "_/redmine issue 267 comments_\\n<http://redmine.avalith.net/issues/267|' in rv.data
         assert b'No comments.' in rv.data
 
-    def _test_jira_issue_comments_last(self):
+    def test_jira_issue_comments_last(self):
         self.jira_connect()
         self.post_data.update(command = '/jira', text = 'issue FET-11 comments last')
         rv = self.app.post('/', data=self.post_data, follow_redirects=True)
@@ -224,19 +225,19 @@ class SlackPMTestCase(unittest.TestCase):
 
     def test_redmine_issue_comments_last(self):
         self.redmine_connect()
-        self.post_data.update(command = '/redmine', text = 'issue 5 comments last')
+        self.post_data.update(command = '/redmine', text = 'issue 266 comments last')
         rv = self.app.post('/', data=self.post_data, follow_redirects=True)
-        assert b'"text": "_/redmine issue 5 comments last_\\n<http://redmine.smarterlith.net/issues/5|' in rv.data
+        assert b'"text": "_/redmine issue 266 comments last_\\n<http://redmine.avalith.net/issues/266|' in rv.data
         assert b'Last comment:' in rv.data
 
     def test_redmine_issue_comments_last_none(self):
         self.redmine_connect()
-        self.post_data.update(command = '/redmine', text = 'issue 3 comments last')
+        self.post_data.update(command = '/redmine', text = 'issue 267 comments last')
         rv = self.app.post('/', data=self.post_data, follow_redirects=True)
-        assert b'"text": "_/redmine issue 3 comments last_\\n<http://redmine.smarterlith.net/issues/3|' in rv.data
+        assert b'"text": "_/redmine issue 267 comments last_\\n<http://redmine.avalith.net/issues/267|' in rv.data
         assert b'No Comments.' in rv.data
 
-    def _test_jira_issue_time_entries(self):
+    def test_jira_issue_time_entries(self):
         self.jira_connect()
         self.post_data.update(command = '/jira', text = 'issue FET-11 time')
         rv = self.app.post('/', data=self.post_data, follow_redirects=True)
@@ -245,12 +246,12 @@ class SlackPMTestCase(unittest.TestCase):
 
     def test_redmine_issue_time_entries(self):
         self.redmine_connect()
-        self.post_data.update(command = '/redmine', text = 'issue 3 time')
+        self.post_data.update(command = '/redmine', text = 'issue 265 time')
         rv = self.app.post('/', data=self.post_data, follow_redirects=True)
         assert b'"text":' in rv.data
 
 
-    def _test_jira_issue_add_time_entry(self):
+    def test_jira_issue_add_time_entry(self):
         self.jira_connect()
         self.post_data.update(command = '/jira', text = 'issue FET-11 time add 5 this is a comment')
         rv = self.app.post('/', data=self.post_data, follow_redirects=True)
@@ -259,7 +260,7 @@ class SlackPMTestCase(unittest.TestCase):
 
     def test_redmine_issue_add_time_entry(self):
         self.redmine_connect()
-        self.post_data.update(command = '/redmine', text = 'issue 3 time add 5 this is a comment')
+        self.post_data.update(command = '/redmine', text = 'issue 265 time add 5 this is a comment')
         rv = self.app.post('/', data=self.post_data, follow_redirects=True)
         assert b'"text":' in rv.data
 
@@ -290,7 +291,7 @@ if __name__ == '__main__':
 #     #         'sui': 'U23423',
 #     #         'sci': 'C234242',
 #     #         'name': 'Redmine',
-#     #         'url': 'http://redmine.smarterlith.net',
+#     #         'url': 'http://redmine.avalith.net',
 #     #         'key': '11a4ecdc2cbd816e66d342cd86ba79bce2fd5860',
 #     #         'project': 'sml',
 #     #         'issue_id': 5

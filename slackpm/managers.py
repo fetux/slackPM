@@ -163,6 +163,10 @@ class RedmineProjectManager(SlackProjectManager):
         return issue
 
     def __str__(self):
+        if self._provider_url:
+            return self._sui+" "+self._sci+" "+self._provider_url
+        if self._provider_name:
+            return self._sui+" "+self._sci+" "+self._provider_name
         return self._sui+" "+self._sci
 
     def __repr__(self):
@@ -188,7 +192,8 @@ class JiraProjectManager(SlackProjectManager):
             if not self._provider_url: raise SlackPMAuthError
             if self._provider_user and self._provider_passwd:
                 self._instance = JIRA(self._provider_url,basic_auth=(self._provider_user, self._provider_passwd))
-            next(self, *args)
+            if not self._instance: raise SlackPMAuthError
+            return next(self, *args)
         return authenticate
 
     def connect(self, url, key=None, user=None, passwd=None):

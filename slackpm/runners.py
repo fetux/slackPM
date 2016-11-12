@@ -13,7 +13,7 @@ class CommandRunner(object):
             t1 = time.time()
             r = next(*args)
             t2 = time.time()
-            logging.info('Benchmark: %s : %s', args, t2 - t1)
+            logging.info('Benchmark: %s : %s', str(args[1])+" "+args[2], str(t2 - t1)+"s")
             return r
         return log
 
@@ -23,7 +23,7 @@ class CommandRunner(object):
         # For not auth commands decompress kwargs with **
         def __help(manager, kwargs=None): return manager.help()
         def __connect_key(manager, kwargs): return manager.connect(kwargs['url'], kwargs['key'])
-        def __connect_passwd(manager, kwargs): return manager.connect(kwargs['url'], kwargs['user'], kwargs)
+        def __connect_passwd(manager, kwargs): return manager.connect(url=kwargs['url'], user=kwargs['user'], passwd=kwargs['passwd'])
         # For auth command do NOT decompress kwargs
         def __project_todo(manager, kwargs): return None
         def __issue_show(manager, kwargs): return manager.issue(kwargs['id']).show()
