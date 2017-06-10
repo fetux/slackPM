@@ -25,7 +25,7 @@ class CommandRunner(object):
         def __connect_key(manager, kwargs): return manager.connect(kwargs['url'], kwargs['key'])
         def __connect_passwd(manager, kwargs): return manager.connect(url=kwargs['url'], user=kwargs['user'], passwd=kwargs['passwd'])
         # For auth command do NOT decompress kwargs
-        def __project_todo(manager, kwargs): return None
+        def __project_todo(manager, kwargs): return manager.todo(kwargs['project_name'])
         def __issue_show(manager, kwargs): return manager.issue(kwargs['id']).show()
         def __issue_status(manager, kwargs): return manager.issue(kwargs['id']).status
         def __issue_set_status(manager, kwargs): return manager.issue(kwargs['id']).set_status(kwargs['value'])
@@ -41,7 +41,7 @@ class CommandRunner(object):
         commands = {
             __connect_key : r"^connect (?P<url>.\S+) (?P<key>[0-z]+)$",
             __connect_passwd : r"^connect (?P<url>.\S+) (?P<user>.\S+) (?P<passwd>.\S+)$",
-            __project_todo : r"^todo (.\S+)$",
+            __project_todo : r"^todo (?P<project_name>.\S+)$",
             __issue_show : r"^issue (?P<id>[0-Z\-]+)$",
             __issue_status : r"^issue (?P<id>[0-Z\-]+) status$",
             __issue_set_status : r"^issue (?P<id>[0-Z\-]+) status (?P<value>[A-z]+)$",

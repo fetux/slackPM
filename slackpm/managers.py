@@ -1,4 +1,5 @@
 from .exceptions import *
+from .resources.projects import RedmineProject
 from .resources.issues import RedmineIssue, JiraIssue
 from redminelib import *
 from redminelib.exceptions import *

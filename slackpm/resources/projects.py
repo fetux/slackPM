@@ -7,7 +7,7 @@ class RedmineProject(SlackPMProject):
     # Operations
     def __init__(self, pm, identifier):
         self._pm_instance = pm._instance
-        self.url = pm._url
+        self.url = pm._provider_url
         if not identifier: raise BadAttributesError()
         self._identifier = identifier
         self._instance = self._pm_instance.project.get(identifier) # Could raise ResourceNotFoundError
@@ -16,10 +16,10 @@ class RedmineProject(SlackPMProject):
 
     def todo(self):
         # Get issues with status "In Progress"
-        issues = self._pm_instance.issue.filter(project=self._identifier,assigned_to_id="me",status_id=2, limit=3)
+        issues = self._pm_instance.issue.filter(project_id=self._identifier,assigned_to_id="me",status_id=2, limit=3)
         if not issues:
             # Get issues with status "New"
-            issues =self._pm_instance.issue.filter(project=self._identifier,assigned_to_id="me",status_id=7,limit=3)
+            issues = self._pm_instance.issue.filter(project_id=self._identifier,assigned_to_id="me",status_id=7,limit=3)
             if not issues:
 
                 return {"text": "It seems there are not issues here."}
