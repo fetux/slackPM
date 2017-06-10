@@ -1,0 +1,1 @@
+web: gunicorn slackpm:app

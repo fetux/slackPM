@@ -1,6 +1,7 @@
 from .exceptions import *
 from .resources.issues import RedmineIssue, JiraIssue
-from redmine import *
+from redminelib import *
+from redminelib.exceptions import *
 from jira import *
 from .wsgi import app, db, User
 import json

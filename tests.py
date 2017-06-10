@@ -26,10 +26,11 @@ class SlackPMTestCase(unittest.TestCase):
                 def __str__(self):
                     return "<User(sui='%s', sci='%s', provider_name='%s')>" % (self.sui, self.sci, self.provider_name)
             db.create_all()
+            return db
         slackpm.init_db = init_db
         self.app = slackpm.app.test_client()
         with slackpm.app.app_context():
-            slackpm.init_db()
+            slackpm.db_test = slackpm.init_db()
         self.post_data = dict(
             token = 'gIkuvaNzQIHg97ATvDxqgjtO',
             team_id = 'T0001',
@@ -42,6 +43,7 @@ class SlackPMTestCase(unittest.TestCase):
         )
 
     def tearDown(self):
+        slackpm.db_test.session.remove()
         os.close(self.db_fd)
         os.unlink('slackpm/testing.slackpm.db')
 
