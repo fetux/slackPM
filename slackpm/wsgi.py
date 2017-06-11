@@ -28,7 +28,7 @@ def dispatcher():
     from .runners import CommandRunner
     try:
         result = CommandRunner.run(manager, command)
-    except SlackPMIssueNotFoundError as e:
+    except SlackPMErrorBase as e:
         result = {"text": "{0}".format(e)}
     return app.response_class(json.dumps(result), content_type="application/json")
 
