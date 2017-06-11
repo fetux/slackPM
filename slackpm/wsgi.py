@@ -1,3 +1,4 @@
+import os
 from flask import Flask
 from flask import request, Response
 from flask_sqlalchemy import SQLAlchemy
@@ -5,7 +6,7 @@ import json
 from .exceptions import *
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///slackpm.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///slackpm.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 @app.route('/', methods=['POST'])
