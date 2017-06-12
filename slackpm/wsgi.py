@@ -1,4 +1,5 @@
 import os
+import requests
 from flask import Flask
 from flask import request, Response
 from flask_sqlalchemy import SQLAlchemy
@@ -31,6 +32,54 @@ def dispatcher():
     except SlackPMErrorBase as e:
         result = {"text": "{0}".format(e)}
     return app.response_class(json.dumps(result), content_type="application/json")
+
+
+@app.route('/webhook/', methods=['POST'])
+def webhook():
+    """ Return the Issue action. """
+    request_data = json.loads(request.data.decode())
+    url = request_data['payload']['url']
+    issue = request_data['payload']['issue']
+    action = request_data['payload']['action']
+
+    data = {
+        "channel" : "#"+issue['project']['name'],
+        "text": "_Issue "+action+"_\n"+"<"+url+"/issues/"+str(issue['id'])+"|"+issue['tracker']['name']+"#"+str(issue['id'])+" "+issue['subject']+">",
+        "attachments": [
+            {
+                "title": "Description",
+                "pretext": "_created by "+issue['author']['firstname']+" "+issue['author']['lastname']+"_",
+                "text": issue['description'],
+                "fields":[
+                    {
+                        "title": "Status",
+                        "value": issue['status']['name'],
+                        "short": True
+                    },
+                    {
+                        "title": "Priority",
+                        "value": issue['priority']['name'],
+                        "short": True
+                    },
+                    {
+                        "title": "Assignee",
+                        "value": (issue['assignee']['firstname']+" "+issue['assignee']['lastname']) if issue['assignee'] else "-",
+                        "short": True
+                    },
+                    {
+                        "title": "Estimated hours",
+                        "value": (issue['estimated_hours'] if issue['estimated_hours'] else "-"),
+                        "short": True
+                    },
+                ],
+                "mrkdwn_in": ["pretext", "text", "fields"]
+            },
+        ]
+    }
+
+    r = requests.post('https://hooks.slack.com/services/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', data = json.dumps(data))
+    print(r)
+    return app.response_class(json.dumps({'result': 'success'}), content_type="application/json")
 
 
 class User(db.Model):
