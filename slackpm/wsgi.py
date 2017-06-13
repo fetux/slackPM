@@ -44,7 +44,7 @@ def webhook():
 
     data = {
         "channel" : "#"+issue['project']['name'],
-        "text": "_Issue "+action+"_\n"+"<"+url+"/issues/"+str(issue['id'])+"|"+issue['tracker']['name']+"#"+str(issue['id'])+" "+issue['subject']+">",
+        "text": "_Issue "+action+"_\n"+"<"+url+"|"+issue['tracker']['name']+"#"+str(issue['id'])+" "+issue['subject']+">",
         "attachments": [
             {
                 "title": "Description",
